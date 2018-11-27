@@ -1,7 +1,5 @@
 package controller.product;
 
-import controller.comparator.NameComparator;
-import controller.comparator.ProductComparator;
 import model.lot.Lot;
 import model.product.Product;
 
@@ -11,14 +9,12 @@ public class ProductController {
 
     private HashMap<Integer, Lot> lots;
     private HashMap<String, String> removedLots;
-    private ProductComparator sortingCriteria;
     private List<Product> availableProducts;
     private HashMap<String, List<Product>> unavailableProducts;
 
     public ProductController(){
         this.lots = new HashMap<Integer, Lot>();
         this.removedLots = new HashMap<String, String>();
-        this.sortingCriteria = new NameComparator();
         this.availableProducts = new ArrayList<Product>();
         this.unavailableProducts = new HashMap<String, List<Product>>();
 
@@ -59,6 +55,8 @@ public class ProductController {
     }
 
     public void changeProductPrice(double price, String productName){
+        ensureNormality();
+
         Product product = null;
         boolean exists = true;
 
@@ -78,15 +76,33 @@ public class ProductController {
     }
 
     public void decreaseProductAmount(int amount, String productName){
+        ensureNormality();
 
         if (checkIfAvailable(productName)){
-            Product product = getAvailableProductByName(productName);
             List<Lot> lots = getLotsByProduct(productName);
             Lot lowestLot = getWithLowestAmount(lots);
             lowestLot.decreaseAmount(amount);
-        } else
-            throw new IllegalArgumentException("Product is not registered");
+        } else{
+            if (checkIfOutOfStock(productName) || checkIfOutOfDate(productName))
+                throw new IllegalArgumentException("There is no lot of this product in stock");
+            else
+                throw new IllegalArgumentException("Product is not registered");
+        }
+    }
 
+    public void ensureNormality(){
+        for (Product product : availableProducts){
+            removeOutOfStockLots(product.getName());
+            removeOutOfDateLots(product.getName());
+        }
+        List<Product> outOfDate = getOutOfDate();
+        List<Product> outOfStock = getOutOfStock();
+        for (Product product : outOfDate){
+            product.setStatus("Unavailable");
+        }
+        for (Product product : outOfStock){
+            product.setStatus("Unavailable");
+        }
     }
 
     private Integer generateNewKey(){
