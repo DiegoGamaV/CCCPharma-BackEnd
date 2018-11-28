@@ -14,11 +14,11 @@ public abstract class Category {
         if (discount == 0.0)
             this.discount = new NoDiscount();
         else if (discount == 0.10)
-            this.discount = new TenthDiscount();
+            this.discount = new GoodDiscount();
         else if (discount == 0.25)
-            this.discount = new QuarterDiscount();
+            this.discount = new GreatDiscount();
         else if (discount == 0.50)
-            this.discount = new HalfDiscount();
+            this.discount = new SuperDiscount();
         else
             throw new IllegalArgumentException("discount type not defined");
     }

@@ -1,11 +1,10 @@
 package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.discount;
 
-public class TenthDiscount implements Discount{
-
-    public TenthDiscount(){
+public class GreatDiscount implements Discount{
+    public GreatDiscount(){
     }
 
     public double getDiscount(){
-        return (float) 0.10;
+        return (float) 0.25;
     }
 }

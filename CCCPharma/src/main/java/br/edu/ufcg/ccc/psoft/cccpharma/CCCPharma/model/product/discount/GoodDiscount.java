@@ -1,10 +1,11 @@
 package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.discount;
 
-public class HalfDiscount implements Discount{
-    public HalfDiscount(){
+public class GoodDiscount implements Discount{
+
+    public GoodDiscount(){
     }
 
     public double getDiscount(){
-        return (float) 0.5;
+        return (float) 0.10;
     }
 }
