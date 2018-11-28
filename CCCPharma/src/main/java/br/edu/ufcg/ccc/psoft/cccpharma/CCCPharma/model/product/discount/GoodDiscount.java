@@ -8,4 +8,5 @@ public class GoodDiscount implements Discount{
     public double getDiscount(){
         return (float) 0.10;
     }
+    
 }

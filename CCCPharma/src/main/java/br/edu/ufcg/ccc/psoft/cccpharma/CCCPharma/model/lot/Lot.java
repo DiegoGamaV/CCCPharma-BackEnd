@@ -8,7 +8,7 @@ public class Lot {
     private Date shelfLife;
 
     public Lot(int amount, Date shelfLife){
-        if (isPositive(amount))
+        if (amount > 0)
             this.amount = amount;
         else
             throw new IllegalArgumentException("Amount cannot be negative or zero");
@@ -26,17 +26,7 @@ public class Lot {
     }
 
     public void decreaseAmount(int amount){
-        if (isPositive(this.amount)) {
-            this.amount = this.amount - amount;
-            if (isPositive(this.amount))
-                this.amount = 0;
-        }
-        else
-            throw new IllegalArgumentException("Lot amount is already 0");
-    }
-
-    private boolean isPositive(int amount){
-        return amount > 0;
+        this.amount -= amount;
     }
 
     public Date getShelfLife(){

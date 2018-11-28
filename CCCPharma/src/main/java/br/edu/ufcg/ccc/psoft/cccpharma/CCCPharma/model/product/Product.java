@@ -16,7 +16,7 @@ public class Product {
     private double price;
     private List<Lot> lots;
 
-    public Product(String name, String barCode, String category, String company, String status ){
+    public Product(String name, String barCode, Category category, String company, String status){
         this.name = name;
         this.barCode = barCode;
         this.company = company;
@@ -77,38 +77,16 @@ public class Product {
             return "Unavailable";
     }
 
-    public void setCategory(String category){
-        switch (category.toLowerCase()){
-            case "cosmetic":
-                this.category = new Cosmetic();
-                break;
-            case "medication":
-                this.category = new Medication();
-                break;
-            case "food":
-                this.category = new Food();
-                break;
-            case "toiletry":
-                this.category = new Toiletry();
-                break;
-            default:
-                throw new IllegalArgumentException("category not defined");
-        }
+    public void setCategory(Category category){
+        this.category = category;
     }
 
-    public String getCategory(){
-        return this.category.toString();
+    public Category getCategory(){
+        return this.category;
     }
     
     public void addLot(int amount, Date shelfLife) {
     	this.lots.add(new Lot(amount, shelfLife));
-    }
-    
-    private void ensureLotsNormality() {
-    	for (Lot lot : this.lots) {
-    		if (lot.isOutOfDate() || lot.isOutOfStock())
-    			this.lots.remove(lot);
-    	}
     }
     
     public int getAmount() {
@@ -141,7 +119,7 @@ public class Product {
     	} else if (totalAmount - amount == 0) {
     		this.lots = new ArrayList<Lot>();
     	} else
-    		throw new IllegalArgumentException("Amount is bigger than products in stock");
+    		throw new IllegalArgumentException("Desired amount is greater than amount of products in stock");
     }
     
     private Lot getClosestToShelfLife() {
@@ -158,6 +136,13 @@ public class Product {
     	} else
     		return null;
     }
+    
+    private void ensureLotsNormality() {
+    	for (Lot lot : this.lots) {
+    		if (lot.isOutOfDate() || lot.isOutOfStock())
+    			this.lots.remove(lot);
+    	}
+    }
 
     public String toString(){
         String description = "product: " + this.name
@@ -173,5 +158,30 @@ public class Product {
 
         return description;
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((barCode == null) ? 0 : barCode.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Product other = (Product) obj;
+		if (barCode == null) {
+			if (other.barCode != null)
+				return false;
+		} else if (!barCode.equals(other.barCode))
+			return false;
+		return true;
+	}
 
 }

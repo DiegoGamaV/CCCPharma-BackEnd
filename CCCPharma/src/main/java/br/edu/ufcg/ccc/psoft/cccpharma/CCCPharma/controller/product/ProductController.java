@@ -2,22 +2,30 @@ package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.controller.product;
 
 import java.util.*;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.Product;
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.category.*;
 
 public class ProductController {
 
     private List<Product> availableProducts;
     private HashMap<String, List<Product>> unavailableProducts;
+    private HashMap<String, Category> categories;
 
     public ProductController(){
         this.availableProducts = new ArrayList<Product>();
+        this.categories = new HashMap<String, Category>();
         this.unavailableProducts = new HashMap<String, List<Product>>();
-
-        this.unavailableProducts.put("OutOfStock", new ArrayList<Product>());
-        this.unavailableProducts.put("OutOfDate", new ArrayList<Product>());
+        
+        this.categories.put("cosmetic", new Cosmetic());
+        this.categories.put("food", new Food());
+        this.categories.put("medication", new Medication());
+        this.categories.put("toiletry", new Toiletry());
+        this.unavailableProducts.put("outofstock", new ArrayList<Product>());
+        this.unavailableProducts.put("outofdate", new ArrayList<Product>());
     }
 
-    public void addProduct(String name, String barCode, String company, String category, String status){
-        Product product = new Product(name, barCode, category, company, "available");
+    public void addProduct(String name, String barCode, String company, String categoryType, String status){
+    	Category category = this.categories.get(categoryType);
+        Product product = new Product(name, barCode, category, company, "Available");
         this.availableProducts.add(product);
     }
 
@@ -48,7 +56,6 @@ public class ProductController {
     }
 
     public void changeProductPrice(double price, String productName){
-    	
         Product product = null;
         boolean exists = true;
 
@@ -76,6 +83,19 @@ public class ProductController {
             else
                 throw new IllegalArgumentException("Product is not registered");
         }
+    }
+    
+    public void changeCategoryDiscount(String categoryType, float discount) {
+    	Category category = getCategory(categoryType);
+    	category.setDiscount(discount);
+    }
+    
+    private Category getCategory(String categoryType) {
+    	Category category = this.categories.get(categoryType);
+    	if (category != null)
+    		return category;
+    	else
+    		throw new IllegalArgumentException("There is no such category in the system");
     }
     
     private boolean checkIfAvailable(String productName){
@@ -146,11 +166,11 @@ public class ProductController {
     }
 
     private List<Product> getOutOfStock(){
-        return this.unavailableProducts.get("OutOfStock");
+        return this.unavailableProducts.get("outofstock");
     }
 
     private List<Product> getOutOfDate(){
-        return this.unavailableProducts.get("OutOfDate");
+        return this.unavailableProducts.get("outofdate");
     }
 
 }
