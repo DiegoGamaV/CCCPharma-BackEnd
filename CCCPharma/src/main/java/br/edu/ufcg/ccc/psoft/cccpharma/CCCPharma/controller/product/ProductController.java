@@ -1,19 +1,14 @@
 package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.controller.product;
 
 import java.util.*;
-import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.lot.Lot;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.Product;
 
 public class ProductController {
 
-    private HashMap<Integer, Lot> lots;
-    private HashMap<String, String> removedLots;
     private List<Product> availableProducts;
     private HashMap<String, List<Product>> unavailableProducts;
 
     public ProductController(){
-        this.lots = new HashMap<Integer, Lot>();
-        this.removedLots = new HashMap<String, String>();
         this.availableProducts = new ArrayList<Product>();
         this.unavailableProducts = new HashMap<String, List<Product>>();
 
@@ -46,16 +41,14 @@ public class ProductController {
             exists = false;
 
         if (exists){
-            Lot lot = new Lot(product, productAmount, shelfLife);
-            this.lots.put(generateNewKey(), lot);
+            product.addLot(productAmount, shelfLife);
         } else {
             throw new IllegalArgumentException("Product is not registered");
         }
     }
 
     public void changeProductPrice(double price, String productName){
-        ensureNormality();
-
+    	
         Product product = null;
         boolean exists = true;
 
@@ -75,12 +68,8 @@ public class ProductController {
     }
 
     public void decreaseProductAmount(int amount, String productName){
-        ensureNormality();
-
         if (checkIfAvailable(productName)){
-            List<Lot> lots = getLotsByProduct(productName);
-            Lot lowestLot = getWithLowestAmount(lots);
-            lowestLot.decreaseAmount(amount);
+            getAvailableProductByName(productName).decreaseAmount(amount);
         } else{
             if (checkIfOutOfStock(productName) || checkIfOutOfDate(productName))
                 throw new IllegalArgumentException("There is no lot of this product in stock");
@@ -88,81 +77,7 @@ public class ProductController {
                 throw new IllegalArgumentException("Product is not registered");
         }
     }
-
-    public void ensureNormality(){
-        for (Product product : availableProducts){
-            removeOutOfStockLots(product.getName());
-            removeOutOfDateLots(product.getName());
-        }
-        List<Product> outOfDate = getOutOfDate();
-        List<Product> outOfStock = getOutOfStock();
-        for (Product product : outOfDate){
-            product.setStatus("Unavailable");
-        }
-        for (Product product : outOfStock){
-            product.setStatus("Unavailable");
-        }
-    }
-
-    private Integer generateNewKey(){
-        return getBiggestKey() + 1;
-    }
-
-    private Integer getBiggestKey(){
-        Set<Integer> keys = this.lots.keySet();
-        Integer biggest = null;
-        if (keys.size() == 0){
-            biggest = -1;
-        } else {
-            biggest = Integer.MIN_VALUE;
-            for (Integer key : keys){
-                if (biggest <= key)
-                    biggest = key;
-            }
-        }
-        return biggest;
-    }
-
-    private void removeOutOfStockLots(String productName){
-        Collection<Lot> lots = this.lots.values();
-        for (Lot lot : lots){
-            if (lot.isOutOfStock() && lot.getProductName().equals(productName)){
-                lots.remove(lot);
-                this.removedLots.put(lot.toString(), "Reason: OutOfStock");
-            }
-        }
-    }
-
-    private void removeOutOfDateLots(String productName){
-        Collection<Lot> lots = this.lots.values();
-        for (Lot lot : lots){
-            if (lot.isOutOfDate() && lot.getProductName().equals(productName)){
-                lots.remove(lot);
-                this.removedLots.put(lot.toString(), "Reason: OutOfDate");
-            }
-        }
-    }
-
-    private Lot getWithLowestAmount(List<Lot> lots){
-        Lot lowestLot = new Lot(null, Integer.MAX_VALUE, new Date());
-        for (Lot lot : lots){
-            if (lot.getAmount() < lowestLot.getAmount())
-                lowestLot = lot;
-        }
-        return lowestLot;
-    }
-
-    private List<Lot> getLotsByProduct(String productName){
-        Collection<Lot> allLots = this.lots.values();
-        List<Lot> lotsWithRequiredProduct = new ArrayList<Lot>();
-        for (Lot lot : allLots){
-            if (lot.getProductName().equals(productName))
-                lotsWithRequiredProduct.add(lot);
-        }
-
-        return lotsWithRequiredProduct;
-    }
-
+    
     private boolean checkIfAvailable(String productName){
         boolean result = false;
         int i = 0;

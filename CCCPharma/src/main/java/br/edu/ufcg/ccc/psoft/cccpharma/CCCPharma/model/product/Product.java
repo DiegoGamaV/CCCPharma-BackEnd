@@ -1,5 +1,10 @@
 package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.lot.Lot;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.category.*;
 
 public class Product {
@@ -9,12 +14,14 @@ public class Product {
     private Category category;
     private Status status;
     private double price;
+    private List<Lot> lots;
 
     public Product(String name, String barCode, String category, String company, String status ){
         this.name = name;
         this.barCode = barCode;
         this.company = company;
         this.price = 0.0;
+        this.lots = new ArrayList<Lot>();
         setStatus(status);
         setCategory(category);
     };
@@ -24,7 +31,10 @@ public class Product {
     }
 
     public void setPrice(double price) {
-        this.price = price;
+        if (price > 0)
+        	this.price = price;
+        else
+        	throw new IllegalArgumentException("Cannot assign a price of zero to a product");
     }
 
     public String getName() {
@@ -89,9 +99,64 @@ public class Product {
     public String getCategory(){
         return this.category.toString();
     }
-
-    private boolean isPriceNotNegative(){
-        return this.price >= 0.0;
+    
+    public void addLot(int amount, Date shelfLife) {
+    	this.lots.add(new Lot(amount, shelfLife));
+    }
+    
+    private void ensureLotsNormality() {
+    	for (Lot lot : this.lots) {
+    		if (lot.isOutOfDate() || lot.isOutOfStock())
+    			this.lots.remove(lot);
+    	}
+    }
+    
+    public int getAmount() {
+    	int amount = 0;
+    	int i = 0;
+    	while (i < this.lots.size()) {
+    		amount += this.lots.get(i).getAmount();
+    	}
+    	return amount;
+    }
+    
+    public void decreaseAmount(int amount) {
+    	ensureLotsNormality();
+    	
+    	int totalAmount = getAmount();
+    	if (totalAmount - amount > 0) {
+    		int i = 0;
+    		while (amount > 0 && i < this.lots.size()) {
+    			Lot closestToOutOfDate = getClosestToShelfLife();
+    			if(closestToOutOfDate.getAmount() <= amount) {
+    				amount -= closestToOutOfDate.getAmount();
+    				this.lots.remove(closestToOutOfDate);
+    				i++;
+    			} else {
+    				int auxliaryAmount = amount;
+    				amount = 0;
+    				closestToOutOfDate.decreaseAmount(auxliaryAmount);
+    			}
+    		}
+    	} else if (totalAmount - amount == 0) {
+    		this.lots = new ArrayList<Lot>();
+    	} else
+    		throw new IllegalArgumentException("Amount is bigger than products in stock");
+    }
+    
+    private Lot getClosestToShelfLife() {
+    	if (this.lots.size() > 0) {    		
+    		Lot closestShelfLifeLot = this.lots.get(0);
+    		int i = 0;
+    		while (i < this.lots.size()) {
+    			Lot lot = this.lots.get(i);
+    			if (lot.getShelfLife().before(closestShelfLifeLot.getShelfLife())) {
+    				closestShelfLifeLot = lot;
+    			}
+    		}
+    		return closestShelfLifeLot;
+    	} else
+    		return null;
     }
 
     public String toString(){

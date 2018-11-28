@@ -2,17 +2,12 @@ package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.lot;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Objects;
-
-import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.Product;
 
 public class Lot {
-    private Product product;
     private int amount;
     private Date shelfLife;
 
-    public Lot(Product product, int amount, Date shelfLife){
-        this.product = product;
+    public Lot(int amount, Date shelfLife){
         if (isPositive(amount))
             this.amount = amount;
         else
@@ -20,18 +15,6 @@ public class Lot {
         this.shelfLife = shelfLife;
         if(!checkShelfLife())
             throw new IllegalArgumentException("Shelf life cannot be before or equal to current time");
-    }
-
-    public String getProductName() {
-        return getProduct().getName();
-    }
-
-    public Product getProduct() {
-        return this.product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
     }
 
     public int getAmount() {
@@ -84,22 +67,35 @@ public class Lot {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Lot)) return false;
-        Lot lot = (Lot) o;
-        return amount == lot.amount &&
-                Objects.equals(product, lot.product) &&
-                Objects.equals(shelfLife, lot.shelfLife);
-    }
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + amount;
+		result = prime * result + ((shelfLife == null) ? 0 : shelfLife.hashCode());
+		return result;
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(product, amount, shelfLife);
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Lot other = (Lot) obj;
+		if (amount != other.amount)
+			return false;
+		if (shelfLife == null) {
+			if (other.shelfLife != null)
+				return false;
+		} else if (!shelfLife.equals(other.shelfLife))
+			return false;
+		return true;
+	}
 
-    @Override
+	@Override
     public String toString(){
-        return "Product: " + this.product.getName() + "; Lot amount: " + this.amount + "; " + getShelfLifeInfo();
+        return "Lot amount: " + this.amount + "; " + "Shelf life: " + getShelfLifeInfo();
     }
 }
