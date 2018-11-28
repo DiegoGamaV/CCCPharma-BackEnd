@@ -86,6 +86,6 @@ public class Lot {
 
 	@Override
     public String toString(){
-        return "Lot amount: " + this.amount + "; " + "Shelf life: " + getShelfLifeInfo();
+        return "VALIDADE: " + getShelfLifeInfo() + "; " + "Nº DE ITENS: " + this.amount;
     }
 }

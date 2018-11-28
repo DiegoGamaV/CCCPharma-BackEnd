@@ -143,6 +143,15 @@ public class Product {
     			this.lots.remove(lot);
     	}
     }
+    
+    private String getLotsToString() {
+    	String description = "[";
+    	for (int i = 0; i < lots.size() - 1; i++) {
+    		description += lots.get(i).toString() + ", ";
+    	}
+    	description += this.lots.get(this.lots.size() - 1).toString() + "]";
+    	return description;
+    }
 
     public String partialInfo() {
     	String description = "PRODUTO: " + this.name;
@@ -165,7 +174,10 @@ public class Product {
             description += "; SITUAÇÃO: Disponível";
         } else
             description += "; SITUAÇÃO: Indisponível";
-
+        
+        description += "Nº DE LOTES: " + getAmount();
+        description += "LOTES: " + getLotsToString();
+        
         return description;
     }
     
