@@ -144,21 +144,31 @@ public class Product {
     	}
     }
 
-    public String toString(){
-        String description = "product: " + this.name
-                         + "; Company: " + this.company
-                         + "; Barcode: " + this.barCode
-                         + "; Category: " + this.category.toString();
+    public String partialInfo() {
+    	String description = "PRODUTO: " + this.name;
+    	if (this.status.equals(Status.Available)) {
+    		description += "; PREÇO: " + price;
+    		description += "; SITUAÇÃO: Disponível";
+    	} else
+    		description += "; SITUAÇÃO: Indisponível";
+    	return description;
+    }
+    
+    public String completeInfo(){
+        String description = "PRODUTO: " + this.name
+                         + "; FABRICANTE: " + this.company
+                         + "; CÓDIGO DE BARRAS: " + this.barCode
+                         + "; CATEGORIA: " + this.category.toString();
 
         if (this.status.equals(Status.Available)) {
-            description += "; Price: " + price;
-            description += "; Availability: Available";
+            description += "; PREÇO: " + price;
+            description += "; SITUAÇÃO: Disponível";
         } else
-            description += "; Availability: Unavailable";
+            description += "; SITUAÇÃO: Indisponível";
 
         return description;
     }
-
+    
 	@Override
 	public int hashCode() {
 		final int prime = 31;

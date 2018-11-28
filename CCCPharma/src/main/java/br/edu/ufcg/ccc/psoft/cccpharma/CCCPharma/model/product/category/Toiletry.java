@@ -10,7 +10,7 @@ public class Toiletry extends Category {
 
     @Override
     public String toString(){
-        return "Toiletry";
+        return "Higiene Pessoal";
     }
 
 }

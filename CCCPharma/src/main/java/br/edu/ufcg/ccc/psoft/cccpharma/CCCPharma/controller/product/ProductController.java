@@ -90,6 +90,34 @@ public class ProductController {
     	category.setDiscount(discount);
     }
     
+    public String getProductsInfo() {
+    	String description = "";
+    	for (Product product : this.availableProducts) {
+    		description += product.partialInfo() + System.lineSeparator();
+    	}
+    	for (Product product : getOutOfDate()) {
+    		description += product.partialInfo() + System.lineSeparator();
+    	}
+    	for (Product product : getOutOfStock()) {
+    		description +=  product.partialInfo() + System.lineSeparator();
+    	}
+    	return description;
+    }
+    
+    public String getInventoryReport() {
+    	String description = "";
+    	for (Product product : this.availableProducts) {
+    		description += product.completeInfo() + System.lineSeparator();
+    	}
+    	for (Product product : getOutOfDate()) {
+    		description += product.completeInfo() + System.lineSeparator();
+    	}
+    	for (Product product : getOutOfStock()) {
+    		description +=  product.completeInfo() + System.lineSeparator();
+    	}
+    	return description;
+    }
+    
     private Category getCategory(String categoryType) {
     	Category category = this.categories.get(categoryType);
     	if (category != null)

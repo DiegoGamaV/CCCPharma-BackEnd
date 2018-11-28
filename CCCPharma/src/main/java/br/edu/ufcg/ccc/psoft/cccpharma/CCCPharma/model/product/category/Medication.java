@@ -10,7 +10,7 @@ public class Medication extends Category {
 
     @Override
     public String toString(){
-        return "Medication";
+        return "Medicamento";
     }
 
 }

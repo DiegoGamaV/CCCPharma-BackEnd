@@ -10,7 +10,7 @@ public class Cosmetic extends Category{
 
     @Override
     public String toString(){
-        return "Cosmetic";
+        return "Cosmético";
     }
 
 }

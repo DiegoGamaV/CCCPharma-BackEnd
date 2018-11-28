@@ -10,7 +10,7 @@ public class Food extends Category {
 
     @Override
     public String toString(){
-        return "Food";
+        return "Alimento";
     }
 
 }
