@@ -3,9 +3,26 @@ package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.lot;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.persistence.*;
+
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.Product;
+
+@Entity
+@Table(name = "lot")
 public class Lot {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
     private int amount;
+    
+    @Temporal(TemporalType.DATE)
     private Date shelfLife;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "barcode")
+    private Product product;
 
     public Lot(int amount, Date shelfLife){
         if (amount > 0)
@@ -43,7 +60,15 @@ public class Lot {
         this.shelfLife = shelfLife;
     }
 
-    public boolean isOutOfStock(){
+    public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
+	public boolean isOutOfStock(){
         return amount == 0;
     }
 
@@ -56,12 +81,11 @@ public class Lot {
         return this.shelfLife.after(currentTime);
     }
 
-    @Override
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + amount;
-		result = prime * result + ((shelfLife == null) ? 0 : shelfLife.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
 
@@ -74,12 +98,10 @@ public class Lot {
 		if (getClass() != obj.getClass())
 			return false;
 		Lot other = (Lot) obj;
-		if (amount != other.amount)
-			return false;
-		if (shelfLife == null) {
-			if (other.shelfLife != null)
+		if (id == null) {
+			if (other.id != null)
 				return false;
-		} else if (!shelfLife.equals(other.shelfLife))
+		} else if (!id.equals(other.id))
 			return false;
 		return true;
 	}

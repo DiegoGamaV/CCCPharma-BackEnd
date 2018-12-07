@@ -1,4 +1,4 @@
-package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.controller.product;
+package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.controller.user;
 
 import org.springframework.lang.NonNull;
 

@@ -1,11 +1,28 @@
 package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.category;
 
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToOne;
+
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.Product;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.discount.*;
 
+@MappedSuperclass
 public abstract class Category {
 
+	@Id
+	protected Long id;
+	
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "category")
     protected Discount discount;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "barcode", nullable = false)
+    protected Product product;
+    
     public double getDiscount(){
         return discount.getDiscount();
     }

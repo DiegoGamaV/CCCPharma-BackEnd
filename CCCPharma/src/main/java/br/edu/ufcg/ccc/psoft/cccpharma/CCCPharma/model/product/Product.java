@@ -4,21 +4,45 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.lot.Lot;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.category.*;
 
+@Entity
+@Table(name = "product")
 public class Product {
+	
+	@Id
+	private String barcode;
+	
+	@NotNull
     private String name;
-    private String barCode;
+	
+    @NotNull
     private String company;
+    
+    @NotNull
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "product")
     private Category category;
+    
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
     private Status status;
+    
+    @NotNull
     private double price;
+    
+	@Column
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "product")
+    @JoinColumn(name = "product_name")
     private List<Lot> lots;
 
-    public Product(String name, String barCode, Category category, String company, String status){
+    public Product(String name, String barcode, Category category, String company, String status){
         this.name = name;
-        this.barCode = barCode;
+        this.barcode = barcode;
         this.company = company;
         this.price = 0.0;
         this.lots = new ArrayList<Lot>();
@@ -45,12 +69,12 @@ public class Product {
         this.name = name;
     }
 
-    public String getBarCode() {
-        return this.barCode;
+    public String getBarcode() {
+        return this.barcode;
     }
 
-    public void setBarCode(String barCode) {
-        this.barCode = barCode;
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
     }
 
     public String getCompany() {
@@ -86,7 +110,18 @@ public class Product {
     }
     
     public void addLot(int amount, Date shelfLife) {
-    	this.lots.add(new Lot(amount, shelfLife));
+    	Lot lot = new Lot(amount, shelfLife);
+    	this.lots.add(lot);
+    	lot.setProduct(this);
+    }
+    
+    public void addLot(Lot lot) {
+    	this.lots.add(lot);
+    	lot.setProduct(this);
+    }
+    
+    public void removeLot(Lot lot) {
+    	this.lots.remove(lot);
     }
     
     public int getAmount() {
@@ -166,7 +201,7 @@ public class Product {
     public String completeInfo(){
         String description = "PRODUTO: " + this.name
                          + "; FABRICANTE: " + this.company
-                         + "; CÓDIGO DE BARRAS: " + this.barCode
+                         + "; CÓDIGO DE BARRAS: " + this.barcode
                          + "; CATEGORIA: " + this.category.toString();
 
         if (this.status.equals(Status.Available)) {
@@ -185,7 +220,7 @@ public class Product {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((barCode == null) ? 0 : barCode.hashCode());
+		result = prime * result + ((barcode == null) ? 0 : barcode.hashCode());
 		return result;
 	}
 
@@ -198,10 +233,10 @@ public class Product {
 		if (getClass() != obj.getClass())
 			return false;
 		Product other = (Product) obj;
-		if (barCode == null) {
-			if (other.barCode != null)
+		if (barcode == null) {
+			if (other.barcode != null)
 				return false;
-		} else if (!barCode.equals(other.barCode))
+		} else if (!barcode.equals(other.barcode))
 			return false;
 		return true;
 	}
