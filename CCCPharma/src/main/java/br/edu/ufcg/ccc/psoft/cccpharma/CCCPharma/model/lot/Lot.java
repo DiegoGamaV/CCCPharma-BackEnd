@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.persistence.*;
 
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.customExceptions.client400.BadRequest400Exception;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.Product;
 
 @Entity
@@ -26,14 +27,14 @@ public class Lot {
     @JoinColumn(name = "barcode")
     private Product product;
 
-    public Lot(int amount, Date shelfLife){
+    public Lot(int amount, Date shelfLife) throws BadRequest400Exception{
         if (amount > 0)
             this.amount = amount;
         else
-            throw new IllegalArgumentException("Amount cannot be negative or zero");
+            throw new BadRequest400Exception("Amount cannot be negative or zero");
         this.shelfLife = shelfLife;
         if(!checkShelfLife())
-            throw new IllegalArgumentException("Shelf life cannot be before or equal to current time");
+            throw new BadRequest400Exception("Shelf life cannot be before or equal to current time");
     }
 
     public int getAmount() {

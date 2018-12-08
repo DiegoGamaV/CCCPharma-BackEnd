@@ -2,6 +2,8 @@ package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.controller.product;
 
 import java.util.*;
 
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.customExceptions.client400.BadRequest400Exception;
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.customExceptions.client400.Conflict409Exception;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.category.*;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.Product;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.repository.CategoryRepository;
@@ -21,14 +23,14 @@ public class ProductController {
         this.categories = loadCategories();
     }
 
-    public void addProduct(String name, String barCode, String company, String categoryType, String status){
+    public void addProduct(String name, String barCode, String company, String categoryType, String status) throws Conflict409Exception{
     	Category category = this.categories.get(categoryType);
         Product product = new Product(name, barCode, category, company, status);
         this.products.add(product);
         this.productDAO.save(product);
     }
 
-    public void addLot(int productAmount, Date shelfLife, String barcode){
+    public void addLot(int productAmount, Date shelfLife, String barcode) throws BadRequest400Exception, Conflict409Exception{
         Product product = getProductByBarcode(barcode);
         
         if (product != null) {
@@ -41,7 +43,7 @@ public class ProductController {
         }
     }
 
-    public void changeProductPrice(double price, String barcode){
+    public void changeProductPrice(double price, String barcode) throws BadRequest400Exception{
         Product product = getProductByBarcode(barcode);
         
         if (product != null) {
@@ -49,10 +51,10 @@ public class ProductController {
         	this.productDAO.save(product);
         }
         else
-            throw new IllegalArgumentException("Product is not registered");
+            throw new BadRequest400Exception("Product is not registered");
     }
 
-    public void decreaseProductAmount(int amount, String barcode){
+    public void decreaseProductAmount(int amount, String barcode) throws BadRequest400Exception{
     	Product product = getProductByBarcode(barcode);
     	
     	if (product != null) {    		
@@ -66,7 +68,7 @@ public class ProductController {
     		throw new IllegalArgumentException("Product is not registered");
     }
     
-    public void changeCategoryDiscount(String categoryType, float discount) {
+    public void changeCategoryDiscount(String categoryType, float discount) throws Conflict409Exception {
     	Category category = getCategory(categoryType);
     	category.setDiscount(discount);
     	this.categoryDAO.save(category);

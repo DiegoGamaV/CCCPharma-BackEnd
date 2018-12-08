@@ -4,7 +4,8 @@ import java.util.HashMap;
 
 import org.springframework.lang.NonNull;
 
-import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.exceptions.LoginAlreadyInUseException;
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.customExceptions.client400.BadRequest400Exception;
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.customExceptions.client400.Conflict409Exception;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.user.User;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.user.UserCollection;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.repository.UserRepository;
@@ -19,7 +20,7 @@ public class UserController {
 	}
 	
 	public void addUser(@NonNull String name, @NonNull String login, @NonNull String password, @NonNull boolean isAdmin)
-			throws LoginAlreadyInUseException {
+			throws Conflict409Exception {
 		User user = new User(name, login, password, isAdmin);
 		this.users.addUser(user);
 		this.userDAO.save(user);
@@ -29,7 +30,7 @@ public class UserController {
 		return users.checkRegistered(login);
 	}
 	
-	public User getUserByLogin(@NonNull String login) {
+	public User getUserByLogin(@NonNull String login) throws BadRequest400Exception {
 		return users.getUserByLogin(login);
 	}
 	

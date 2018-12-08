@@ -7,6 +7,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToOne;
 
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.customExceptions.client400.Conflict409Exception;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.category.discount.*;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.Product;
 
@@ -27,7 +28,7 @@ public abstract class Category {
         return discount.getDiscount();
     }
 
-    public void setDiscount(double discount){
+    public void setDiscount(double discount) throws Conflict409Exception{
         if (discount == 0.0)
             this.discount = new NoDiscount();
         else if (discount == 0.10)
@@ -37,7 +38,7 @@ public abstract class Category {
         else if (discount == 0.50)
             this.discount = new SuperDiscount();
         else
-            throw new IllegalArgumentException("discount type not defined");
+            throw new Conflict409Exception("discount type not defined");
     }
 
 	@Override

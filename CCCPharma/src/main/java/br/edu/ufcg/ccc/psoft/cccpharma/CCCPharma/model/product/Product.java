@@ -8,6 +8,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.customExceptions.client400.BadRequest400Exception;
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.customExceptions.client400.Conflict409Exception;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.category.*;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.lot.Lot;
 
@@ -43,7 +45,7 @@ public class Product {
     @JoinColumn(name = "product_name")
     private List<Lot> lots;
 
-    public Product(String name, String barcode, Category category, String company, String status){
+    public Product(String name, String barcode, Category category, String company, String status) throws Conflict409Exception{
         this.name = name;
         this.barcode = barcode;
         this.company = company;
@@ -57,11 +59,11 @@ public class Product {
         return (this.price - this.price * this.category.getDiscount());
     }
 
-    public void setPrice(double price) {
+    public void setPrice(double price) throws BadRequest400Exception {
         if (price > 0)
         	this.price = price;
         else
-        	throw new IllegalArgumentException("Cannot assign a price of zero to a product");
+        	throw new BadRequest400Exception("Cannot assign a price of zero to a product");
     }
 
     public String getName() {
@@ -88,13 +90,13 @@ public class Product {
         this.company = company;
     }
 
-    public void setStatus(String status){
+    public void setStatus(String status) throws Conflict409Exception{
         if (status.toLowerCase().equals("available"))
             this.status = Status.Available;
         else if (status.toLowerCase().equals("unavailable"))
             this.status = Status.Unavailable;
         else
-            throw new IllegalArgumentException("Status value not defined");
+            throw new Conflict409Exception("Status value not defined");
     }
 
     public String getStatus(){
@@ -112,7 +114,7 @@ public class Product {
         return this.category;
     }
     
-    public void addLot(int amount, Date shelfLife) {
+    public void addLot(int amount, Date shelfLife) throws BadRequest400Exception {
     	Lot lot = new Lot(amount, shelfLife);
     	this.lots.add(lot);
     	lot.setProduct(this);
@@ -136,7 +138,7 @@ public class Product {
     	return amount;
     }
     
-    public void decreaseAmount(int amount) {
+    public void decreaseAmount(int amount) throws BadRequest400Exception {
     	ensureLotsNormality();
     	
     	int totalAmount = getAmount();
@@ -157,7 +159,7 @@ public class Product {
     	} else if (totalAmount - amount == 0) {
     		this.lots = new ArrayList<Lot>();
     	} else
-    		throw new IllegalArgumentException("Desired amount is greater than amount of products in stock");
+    		throw new BadRequest400Exception("Desired amount is greater than amount of products in stock");
     }
     
     private Lot getClosestToShelfLife() {
