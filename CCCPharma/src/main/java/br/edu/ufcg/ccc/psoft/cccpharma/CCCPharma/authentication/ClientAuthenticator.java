@@ -1,4 +1,4 @@
-package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.controller.user;
+package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.authentication;
 
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.user.User;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.repository.UserRepository;
