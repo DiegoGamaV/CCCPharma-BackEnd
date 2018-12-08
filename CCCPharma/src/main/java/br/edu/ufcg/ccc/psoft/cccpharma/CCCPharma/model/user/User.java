@@ -1,18 +1,43 @@
 package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.user;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import javax.persistence.*;
+import javax.validation.constraints.Size;
+import javax.xml.bind.DatatypeConverter;
+
+import org.hibernate.annotations.Type;
 import org.springframework.lang.NonNull;
 
+@Entity
+@Table(name = "user")
 public class User {
-	private String name;
+	
+	@Id
 	private String login;
+	
+	@Column(name = "name", nullable = false)
+	@Size(max = 50)
+	private String name;
+	
+	@Column(name = "password", nullable = false)
+	@Size(max = 20)
 	private String password;
+	
+	@Column(name = "is_admin", nullable = false)
+	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private boolean isAdmin;
 	
 	public User(@NonNull String _name, @NonNull String _login, @NonNull String _password, boolean _isAdmin) {
 		this.name = _name;
 		this.login = _login;
-		this.password = _password;
 		this.isAdmin = _isAdmin;
+		try {
+			this.password = digestPassword(_password);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public String getName() {
@@ -33,6 +58,14 @@ public class User {
 	
 	private void setPassword(@NonNull String newPassword) {
 		password = newPassword;
+	}
+	
+	private String digestPassword(String password) throws NoSuchAlgorithmException {
+		MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+		messageDigest.update(password.getBytes());
+		byte[] digestedBytes = messageDigest.digest();
+		String digestedPassword = DatatypeConverter.printHexBinary(digestedBytes).toUpperCase();
+		return digestedPassword;
 	}
 	
 	public boolean changePassword(@NonNull String oldPassword, @NonNull String newPassword) {

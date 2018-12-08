@@ -15,8 +15,10 @@ public class Lot {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@Column(name = "amount", nullable = false)
     private int amount;
     
+	@Column(name = "shelf_life", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date shelfLife;
     

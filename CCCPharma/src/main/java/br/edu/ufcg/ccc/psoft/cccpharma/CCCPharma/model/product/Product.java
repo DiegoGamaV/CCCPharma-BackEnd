@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.lot.Lot;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.category.*;
@@ -17,22 +18,24 @@ public class Product {
 	@Id
 	private String barcode;
 	
-	@NotNull
+	@Column(name = "name", nullable = false)
+	@Size(max = 30)
     private String name;
 	
-    @NotNull
+	@Column(name = "company", nullable = false)
+	@Size(max = 40)
     private String company;
     
     @NotNull
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "product")
     private Category category;
     
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(length = 10)
+    @Column(length = 10, nullable = false)
     private Status status;
     
-    @NotNull
+    @Column(name = "price", nullable = false)
+    @Size(max = 30)
     private double price;
     
 	@Column
