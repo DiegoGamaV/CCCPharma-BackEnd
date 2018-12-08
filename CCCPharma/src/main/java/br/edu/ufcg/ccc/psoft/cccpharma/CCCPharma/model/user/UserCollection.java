@@ -10,16 +10,15 @@ import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.exceptions.LoginAlreadyInUseExc
 public class UserCollection {
 	Map<String, User> users;
 	
-	public UserCollection() {
-		users = new HashMap<>();
+	public UserCollection(HashMap<String, User> users) {
+		this.users = users;
 	}
 	
-	public void addUser(@NonNull String name, @NonNull String login, @NonNull String password, boolean isAdmin) 
-			throws LoginAlreadyInUseException {
-		if (users.containsKey(login)) {
-			throw new LoginAlreadyInUseException(login);
+	public void addUser(User user) throws LoginAlreadyInUseException {
+		if (users.containsKey(user.getLogin())) {
+			throw new LoginAlreadyInUseException(user.getLogin());
 		}
-		users.put(login, new User(name, login, password, isAdmin));
+		users.put(user.getLogin(), user);
 	}
 	
 	public boolean checkRegistered(@NonNull String login) {

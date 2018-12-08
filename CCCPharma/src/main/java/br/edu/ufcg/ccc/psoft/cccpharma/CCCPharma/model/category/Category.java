@@ -1,4 +1,4 @@
-package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.category;
+package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.category;
 
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
@@ -7,8 +7,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToOne;
 
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.category.discount.*;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.Product;
-import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.discount.*;
 
 @MappedSuperclass
 public abstract class Category {

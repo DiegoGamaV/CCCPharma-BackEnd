@@ -8,8 +8,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.category.*;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.lot.Lot;
-import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.category.*;
 
 @Entity
 @Table(name = "product")

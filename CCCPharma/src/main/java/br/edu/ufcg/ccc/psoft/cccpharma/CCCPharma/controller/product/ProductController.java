@@ -1,120 +1,88 @@
 package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.controller.product;
 
 import java.util.*;
+
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.category.*;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.Product;
-import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.category.*;
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.repository.CategoryRepository;
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.repository.ProductRepository;
 
 public class ProductController {
 
-    private List<Product> availableProducts;
-    private HashMap<String, List<Product>> unavailableProducts;
+	private List<Product> products;
     private HashMap<String, Category> categories;
+    private ProductRepository productDAO;
+    private CategoryRepository categoryDAO;
 
-    public ProductController(){
-        this.availableProducts = new ArrayList<Product>();
-        this.categories = new HashMap<String, Category>();
-        this.unavailableProducts = new HashMap<String, List<Product>>();
-        
-        this.categories.put("cosmetic", new Cosmetic());
-        this.categories.put("food", new Food());
-        this.categories.put("medication", new Medication());
-        this.categories.put("toiletry", new Toiletry());
-        this.unavailableProducts.put("outofstock", new ArrayList<Product>());
-        this.unavailableProducts.put("outofdate", new ArrayList<Product>());
+    public ProductController(ProductRepository productDAO, CategoryRepository categoryDAO){
+        this.productDAO = productDAO;
+        this.categoryDAO = categoryDAO;
+        this.products = loadProducts();
+        this.categories = loadCategories();
     }
 
     public void addProduct(String name, String barCode, String company, String categoryType, String status){
     	Category category = this.categories.get(categoryType);
-        Product product = new Product(name, barCode, category, company, "Available");
-        this.availableProducts.add(product);
+        Product product = new Product(name, barCode, category, company, status);
+        this.products.add(product);
+        this.productDAO.save(product);
     }
 
     public void addLot(int productAmount, Date shelfLife, String barcode){
-        boolean exists = true;
-        Product product = null;
-
-        if (checkIfAvailable(barcode)){
-            product = getAvailableProductByBarcode(barcode);
-        } else if (checkIfOutOfDate(barcode)){
-            product = getOutOfDateProductByName(barcode);
-            getOutOfDate().remove(product);
-            product.setStatus("Available");
-            this.availableProducts.add(product);
-        } else if (checkIfOutOfStock(barcode)){
-            product = getOutOfStockProductByBarcode(barcode);
-            getOutOfStock().remove(product);
-            product.setStatus("Available");
-            this.availableProducts.add(product);
-        } else
-            exists = false;
-
-        if (exists){
-            product.addLot(productAmount, shelfLife);
+        Product product = getProductByBarcode(barcode);
+        
+        if (product != null) {
+        	product.addLot(productAmount, shelfLife);
+        	if (product.getStatus().toLowerCase().equals("unavailable"))
+        		product.setStatus("Available");
+        	this.productDAO.save(product);
         } else {
             throw new IllegalArgumentException("Product is not registered");
         }
     }
 
     public void changeProductPrice(double price, String barcode){
-        Product product = null;
-        boolean exists = true;
-
-        if (checkIfAvailable(barcode)){
-            product = getAvailableProductByBarcode(barcode);
-        } else if (checkIfOutOfStock(barcode)){
-            product = getOutOfStockProductByBarcode(barcode);
-        } else if (checkIfOutOfDate(barcode)){
-            product = getOutOfDateProductByName(barcode);
-        } else
-            exists = false;
-
-        if (exists){
-            product.setPrice(price);
-        } else
+        Product product = getProductByBarcode(barcode);
+        
+        if (product != null) {
+        	product.setPrice(price);
+        	this.productDAO.save(product);
+        }
+        else
             throw new IllegalArgumentException("Product is not registered");
     }
 
     public void decreaseProductAmount(int amount, String barcode){
-        if (checkIfAvailable(barcode)){
-            getAvailableProductByBarcode(barcode).decreaseAmount(amount);
-        } else{
-            if (checkIfOutOfStock(barcode) || checkIfOutOfDate(barcode))
-                throw new IllegalArgumentException("There is no lot of this product in stock");
-            else
-                throw new IllegalArgumentException("Product is not registered");
-        }
+    	Product product = getProductByBarcode(barcode);
+    	
+    	if (product != null) {    		
+    		if (product.getStatus().toLowerCase().equals("unavailable"))
+    			throw new IllegalArgumentException("There is no lot of this product in stock");
+    		else {
+    			product.decreaseAmount(amount);
+    			this.productDAO.save(product);
+    		}
+    	} else
+    		throw new IllegalArgumentException("Product is not registered");
     }
     
     public void changeCategoryDiscount(String categoryType, float discount) {
     	Category category = getCategory(categoryType);
     	category.setDiscount(discount);
+    	this.categoryDAO.save(category);
     }
     
     public String getProductsInfo() {
     	String description = "";
-    	for (Product product : this.availableProducts) {
+    	for (Product product : this.products)
     		description += product.partialInfo() + System.lineSeparator();
-    	}
-    	for (Product product : getOutOfDate()) {
-    		description += product.partialInfo() + System.lineSeparator();
-    	}
-    	for (Product product : getOutOfStock()) {
-    		description +=  product.partialInfo() + System.lineSeparator();
-    	}
     	return description;
     }
     
     public String getInventoryReport() {
     	String description = "";
-    	for (Product product : this.availableProducts) {
+    	for (Product product : this.products)
     		description += product.completeInfo() + System.lineSeparator();
-    	}
-    	for (Product product : getOutOfDate()) {
-    		description += product.completeInfo() + System.lineSeparator();
-    	}
-    	for (Product product : getOutOfStock()) {
-    		description +=  product.completeInfo() + System.lineSeparator();
-    	}
     	return description;
     }
     
@@ -125,80 +93,35 @@ public class ProductController {
     	else
     		throw new IllegalArgumentException("There is no such category in the system");
     }
+
+    private Product getProductByBarcode(String barcode) {
+    	for (Product product : this.products) {
+            if (product.getName().equals(barcode))
+                return product;
+        }
+        return null;
+    }
     
-    private boolean checkIfAvailable(String productName){
-        boolean result = false;
-        int i = 0;
-        while (result == false && i < this.availableProducts.size()){
-            Product product = this.availableProducts.get(i);
-            if (product.getName().equals(productName))
-                result = true;
-            else
-                i++;
-        }
-        return true;
+    private HashMap<String, Category> loadCategories(){
+    	Category cosmetic = this.categoryDAO.findById((long) 1).get();
+    	Category food = this.categoryDAO.findById((long) 2).get();
+    	Category medication = this.categoryDAO.findById((long) 3).get();
+    	Category toiletry = this.categoryDAO.findById((long) 4).get();
+    	
+    	HashMap<String, Category> categories = new HashMap<String, Category>();
+    	categories.put("cosmetic", cosmetic);
+    	categories.put("food", food);
+    	categories.put("medication", medication);
+    	categories.put("toiletry", toiletry);
+    	return categories;
     }
-
-    private Product getAvailableProductByBarcode(String barcode){
-        for (Product product : this.availableProducts) {
-            if (product.getName().equals(barcode))
-                return product;
-        }
-        return null;
+    
+    private ArrayList<Product> loadProducts(){
+    	Iterable<Product> iterableProducts = this.productDAO.findAll();
+    	ArrayList<Product> productList = new ArrayList<Product>();
+    	for (Product product : iterableProducts) {
+    		productList.add(product);
+    	}
+    	return productList;
     }
-
-    private boolean checkIfOutOfStock(String barcode){
-        List<Product> outOfStockProducts = getOutOfStock();
-        boolean result = false;
-        int i = 0;
-        while (result == false && i < outOfStockProducts.size()){
-            Product product = outOfStockProducts.get(i);
-            if (product.getName().equals(barcode))
-                result = true;
-            else
-                i++;
-        }
-        return true;
-    }
-
-    private Product getOutOfStockProductByBarcode(String barcode){
-        List<Product> outOfStock = getOutOfStock();
-        for (Product product : outOfStock) {
-            if (product.getName().equals(barcode))
-                return product;
-        }
-        return null;
-    }
-
-    private boolean checkIfOutOfDate(String barcode){
-        List<Product> outOfDateProducts = getOutOfDate();
-        boolean result = false;
-        int i = 0;
-        while (result == false && i < outOfDateProducts.size()){
-            Product product = outOfDateProducts.get(i);
-            if (product.getName().equals(barcode))
-                result = true;
-            else
-                i++;
-        }
-        return true;
-    }
-
-    private Product getOutOfDateProductByName(String barcode){
-        List<Product> outOfDate = getOutOfDate();
-        for (Product product : outOfDate) {
-            if (product.getName().equals(barcode))
-                return product;
-        }
-        return null;
-    }
-
-    private List<Product> getOutOfStock(){
-        return this.unavailableProducts.get("outofstock");
-    }
-
-    private List<Product> getOutOfDate(){
-        return this.unavailableProducts.get("outofdate");
-    }
-
 }

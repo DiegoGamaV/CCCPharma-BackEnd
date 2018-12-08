@@ -1,4 +1,4 @@
-package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.discount;
+package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.category.discount;
 
 import javax.persistence.MappedSuperclass;
 
