@@ -1,4 +1,4 @@
-package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product;
+package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.exceptions;
 
 import org.springframework.lang.NonNull;
 

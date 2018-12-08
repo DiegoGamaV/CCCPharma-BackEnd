@@ -2,7 +2,7 @@ package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.controller.user;
 
 import org.springframework.lang.NonNull;
 
-import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.LoginAlreadyInUseException;
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.exceptions.LoginAlreadyInUseException;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.user.User;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.user.UserCollection;
 

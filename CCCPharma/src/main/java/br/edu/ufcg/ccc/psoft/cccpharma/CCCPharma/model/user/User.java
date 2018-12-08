@@ -22,7 +22,6 @@ public class User {
 	private String name;
 	
 	@Column(name = "password", nullable = false)
-	@Size(max = 20)
 	private String password;
 	
 	@Column(name = "is_admin", nullable = false)

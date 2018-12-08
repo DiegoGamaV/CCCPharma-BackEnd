@@ -29,19 +29,19 @@ public class ProductController {
         this.availableProducts.add(product);
     }
 
-    public void addLot(int productAmount, Date shelfLife, String productName){
+    public void addLot(int productAmount, Date shelfLife, String barcode){
         boolean exists = true;
         Product product = null;
 
-        if (checkIfAvailable(productName)){
-            product = getAvailableProductByName(productName);
-        } else if (checkIfOutOfDate(productName)){
-            product = getOutOfDateProductByName(productName);
+        if (checkIfAvailable(barcode)){
+            product = getAvailableProductByBarcode(barcode);
+        } else if (checkIfOutOfDate(barcode)){
+            product = getOutOfDateProductByName(barcode);
             getOutOfDate().remove(product);
             product.setStatus("Available");
             this.availableProducts.add(product);
-        } else if (checkIfOutOfStock(productName)){
-            product = getOutOfStockProductByName(productName);
+        } else if (checkIfOutOfStock(barcode)){
+            product = getOutOfStockProductByBarcode(barcode);
             getOutOfStock().remove(product);
             product.setStatus("Available");
             this.availableProducts.add(product);
@@ -55,16 +55,16 @@ public class ProductController {
         }
     }
 
-    public void changeProductPrice(double price, String productName){
+    public void changeProductPrice(double price, String barcode){
         Product product = null;
         boolean exists = true;
 
-        if (checkIfAvailable(productName)){
-            product = getAvailableProductByName(productName);
-        } else if (checkIfOutOfStock(productName)){
-            product = getOutOfStockProductByName(productName);
-        } else if (checkIfOutOfDate(productName)){
-            product = getOutOfDateProductByName(productName);
+        if (checkIfAvailable(barcode)){
+            product = getAvailableProductByBarcode(barcode);
+        } else if (checkIfOutOfStock(barcode)){
+            product = getOutOfStockProductByBarcode(barcode);
+        } else if (checkIfOutOfDate(barcode)){
+            product = getOutOfDateProductByName(barcode);
         } else
             exists = false;
 
@@ -74,11 +74,11 @@ public class ProductController {
             throw new IllegalArgumentException("Product is not registered");
     }
 
-    public void decreaseProductAmount(int amount, String productName){
-        if (checkIfAvailable(productName)){
-            getAvailableProductByName(productName).decreaseAmount(amount);
+    public void decreaseProductAmount(int amount, String barcode){
+        if (checkIfAvailable(barcode)){
+            getAvailableProductByBarcode(barcode).decreaseAmount(amount);
         } else{
-            if (checkIfOutOfStock(productName) || checkIfOutOfDate(productName))
+            if (checkIfOutOfStock(barcode) || checkIfOutOfDate(barcode))
                 throw new IllegalArgumentException("There is no lot of this product in stock");
             else
                 throw new IllegalArgumentException("Product is not registered");
@@ -139,21 +139,21 @@ public class ProductController {
         return true;
     }
 
-    private Product getAvailableProductByName(String productName){
+    private Product getAvailableProductByBarcode(String barcode){
         for (Product product : this.availableProducts) {
-            if (product.getName().equals(productName))
+            if (product.getName().equals(barcode))
                 return product;
         }
         return null;
     }
 
-    private boolean checkIfOutOfStock(String productName){
+    private boolean checkIfOutOfStock(String barcode){
         List<Product> outOfStockProducts = getOutOfStock();
         boolean result = false;
         int i = 0;
         while (result == false && i < outOfStockProducts.size()){
             Product product = outOfStockProducts.get(i);
-            if (product.getName().equals(productName))
+            if (product.getName().equals(barcode))
                 result = true;
             else
                 i++;
@@ -161,22 +161,22 @@ public class ProductController {
         return true;
     }
 
-    private Product getOutOfStockProductByName(String productName){
+    private Product getOutOfStockProductByBarcode(String barcode){
         List<Product> outOfStock = getOutOfStock();
         for (Product product : outOfStock) {
-            if (product.getName().equals(productName))
+            if (product.getName().equals(barcode))
                 return product;
         }
         return null;
     }
 
-    private boolean checkIfOutOfDate(String productName){
+    private boolean checkIfOutOfDate(String barcode){
         List<Product> outOfDateProducts = getOutOfDate();
         boolean result = false;
         int i = 0;
         while (result == false && i < outOfDateProducts.size()){
             Product product = outOfDateProducts.get(i);
-            if (product.getName().equals(productName))
+            if (product.getName().equals(barcode))
                 result = true;
             else
                 i++;
@@ -184,10 +184,10 @@ public class ProductController {
         return true;
     }
 
-    private Product getOutOfDateProductByName(String productName){
+    private Product getOutOfDateProductByName(String barcode){
         List<Product> outOfDate = getOutOfDate();
         for (Product product : outOfDate) {
-            if (product.getName().equals(productName))
+            if (product.getName().equals(barcode))
                 return product;
         }
         return null;

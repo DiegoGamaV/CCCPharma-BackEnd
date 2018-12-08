@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.springframework.lang.NonNull;
 
-import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.model.product.LoginAlreadyInUseException;
+import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.exceptions.LoginAlreadyInUseException;
 
 public class UserCollection {
 	Map<String, User> users;
