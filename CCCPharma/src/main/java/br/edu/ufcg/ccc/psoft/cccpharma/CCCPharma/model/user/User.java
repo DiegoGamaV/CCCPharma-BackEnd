@@ -43,20 +43,36 @@ public class User {
 		return name;
 	}
 	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	public String getLogin() {
 		return login;
 	}
 	
+	public void setLogin(String login) {
+		this.login = login;
+	}
+
 	public boolean isAdmin() {
-		return isAdmin;
+		return this.isAdmin;
+	}
+	
+	public void setIsAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+	
+	public void setPassword(@NonNull String newPassword) {
+		password = newPassword;
+	}
+
+	public String getPassword() {
+		return this.password;
 	}
 
 	public boolean checkPassword(@NonNull String maybePassword) {
 		return password.equals(maybePassword);
-	}
-	
-	private void setPassword(@NonNull String newPassword) {
-		password = newPassword;
 	}
 	
 	private String digestPassword(String password) throws NoSuchAlgorithmException {

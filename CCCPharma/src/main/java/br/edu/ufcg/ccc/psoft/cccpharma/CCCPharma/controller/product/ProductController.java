@@ -40,7 +40,7 @@ public class ProductController {
 
 		if (product != null) {
 			product.addLot(productAmount, shelfLife);
-			if (product.getStatus().toLowerCase().equals("unavailable"))
+			if (product.getStatusInfo().toLowerCase().equals("unavailable"))
 				product.setStatus("Available");
 			this.productDAO.save(product);
 		} else {
@@ -62,7 +62,7 @@ public class ProductController {
 		Product product = getProductByBarcode(barcode);
 
 		if (product != null) {
-			if (product.getStatus().toLowerCase().equals("unavailable"))
+			if (product.getStatusInfo().toLowerCase().equals("unavailable"))
 				throw new IllegalArgumentException("There is no lot of this product in stock");
 			else {
 				product.decreaseAmount(amount);
@@ -72,7 +72,7 @@ public class ProductController {
 			throw new IllegalArgumentException("Product is not registered");
 	}
 
-	public void changeCategoryDiscount(String categoryType, float discount) throws Conflict409Exception {
+	public void changeCategoryDiscount(String categoryType, double discount) throws Conflict409Exception {
 		Category category = getCategory(categoryType);
 		category.setDiscount(discount);
 		this.categoryDAO.save(category);
@@ -82,12 +82,12 @@ public class ProductController {
 		List<PartialInformationProduct> productsInfo = new ArrayList<>();
 
 		for (Product product : this.products) {
-			if (product.getStatus().toLowerCase().equals("available"))
+			if (product.getStatusInfo().toLowerCase().equals("available"))
 				productsInfo.add(new PartialInformationAvailableProduct
-						(product.getName(), product.getPrice(), product.getStatus()));
+						(product.getName(), product.getPrice(), product.getStatusInfo()));
 			else
 				productsInfo.add(new PartialInformationUnavailableProduct
-						(product.getName(), product.getStatus()));
+						(product.getName(), product.getStatusInfo()));
 		}
 		return productsInfo;
 	}

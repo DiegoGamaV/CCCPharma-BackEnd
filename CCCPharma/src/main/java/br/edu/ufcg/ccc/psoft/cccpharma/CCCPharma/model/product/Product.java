@@ -98,14 +98,22 @@ public class Product {
         else
             throw new Conflict409Exception("Status value not defined");
     }
-
-    public String getStatus(){
+    
+    public void setStatus(Status status) {
+    	this.status = status;
+    }
+    
+    public String getStatusInfo(){
         if (this.status.equals(Status.Available))
             return "Available";
         else
             return "Unavailable";
     }
 
+    public Status getStatus() {
+    	return this.status;
+    }
+    
     public void setCategory(Category category){
         this.category = category;
     }
