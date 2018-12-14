@@ -1,10 +1,10 @@
 package br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.jsonAdaptedModels.user;
 
-public class VerifificationInformationUser {
+public class VerificationInformationUser {
 	private String login;
 	private String password;
 
-	public VerifificationInformationUser(String login, String password) {
+	public VerificationInformationUser(String login, String password) {
 		super();
 		this.login = login;
 		this.password = password;

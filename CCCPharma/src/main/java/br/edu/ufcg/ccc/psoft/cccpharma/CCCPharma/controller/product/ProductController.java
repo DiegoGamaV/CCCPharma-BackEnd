@@ -44,7 +44,7 @@ public class ProductController {
 				product.setStatus("Available");
 			this.productDAO.save(product);
 		} else {
-			throw new IllegalArgumentException("Product is not registered");
+			throw new BadRequest400Exception("Product is not registered");
 		}
 	}
 
@@ -58,21 +58,21 @@ public class ProductController {
 			throw new BadRequest400Exception("Product is not registered");
 	}
 
-	public void decreaseProductAmount(int amount, String barcode) throws BadRequest400Exception {
+	public void decreaseProductAmount(int amount, String barcode) throws BadRequest400Exception, Conflict409Exception {
 		Product product = getProductByBarcode(barcode);
 
 		if (product != null) {
 			if (product.getStatusInfo().toLowerCase().equals("unavailable"))
-				throw new IllegalArgumentException("There is no lot of this product in stock");
+				throw new Conflict409Exception("There is no lot of this product in stock");
 			else {
 				product.decreaseAmount(amount);
 				this.productDAO.save(product);
 			}
 		} else
-			throw new IllegalArgumentException("Product is not registered");
+			throw new BadRequest400Exception("Product is not registered");
 	}
 
-	public void changeCategoryDiscount(String categoryType, double discount) throws Conflict409Exception {
+	public void changeCategoryDiscount(String categoryType, double discount) {
 		Category category = getCategory(categoryType);
 		category.setDiscount(discount);
 		this.categoryDAO.save(category);
@@ -80,7 +80,7 @@ public class ProductController {
 
 	public List<PartialInformationProduct> getProductsInfo() {
 		List<PartialInformationProduct> productsInfo = new ArrayList<>();
-
+		
 		for (Product product : this.products) {
 			if (product.getStatusInfo().toLowerCase().equals("available"))
 				productsInfo.add(new PartialInformationAvailableProduct
@@ -101,12 +101,12 @@ public class ProductController {
 		if (category != null)
 			return category;
 		else
-			throw new IllegalArgumentException("There is no such category in the system");
+			throw new BadRequest400Exception("There is no such category in the system");
 	}
 
 	private Product getProductByBarcode(String barcode) {
 		for (Product product : this.products) {
-			if (product.getName().equals(barcode))
+			if (product.getBarcode().equals(barcode))
 				return product;
 		}
 		return null;
@@ -126,9 +126,9 @@ public class ProductController {
 		return categories;
 	}
 
-	private ArrayList<Product> loadProducts() {
+	private List<Product> loadProducts() {
 		Iterable<Product> iterableProducts = this.productDAO.findAll();
-		ArrayList<Product> productList = new ArrayList<Product>();
+		List<Product> productList = new ArrayList<Product>();
 		for (Product product : iterableProducts) {
 			productList.add(product);
 		}
