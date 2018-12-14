@@ -19,7 +19,6 @@ import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.authentication.ClientAuthentica
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.controller.product.ProductController;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.controller.user.UserController;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.jsonAdaptedModels.Request.AuthenticatedRequest;
-import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.jsonAdaptedModels.Request.UnauthenticatedRequest;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.jsonAdaptedModels.category.UpdateInformationCategory;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.jsonAdaptedModels.lot.RegisterInformationLot;
 import br.edu.ufcg.ccc.psoft.cccpharma.CCCPharma.jsonAdaptedModels.product.*;
